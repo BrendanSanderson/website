@@ -2,10 +2,31 @@ let nav = (function() {
     var started = false;
     var gameInterval;
     var cubeWidth = 0;
+    var width = 0;
     var keys = {
         l: false,
         r: false,
         u: false
+    };
+    var isMobile = {
+        Android: function() {
+            return navigator.userAgent.match(/Android/i);
+        },
+        BlackBerry: function() {
+            return navigator.userAgent.match(/BlackBerry/i);
+        },
+        iOS: function() {
+            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+        },
+        Opera: function() {
+            return navigator.userAgent.match(/Opera Mini/i);
+        },
+        Windows: function() {
+            return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+        },
+        any: function() {
+            return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+        }
     };
     var goTo = "";
     var blocks = [];
@@ -18,6 +39,29 @@ let nav = (function() {
         x: 0,
         y: 0
     };
+
+    let floorImg = new Image();
+    floorImg.src = './nav/floor.png';
+    let skyImg = new Image();
+    skyImg.src = './nav/sky.png';
+
+    var blocksImg = new Array();
+
+    blocksImg[0] = new Image();
+    blocksImg[0].src = './nav/about.png';
+
+    blocksImg[1] = new Image();
+    blocksImg[1].src = './nav/skills.png';
+
+    blocksImg[2] = new Image();
+    blocksImg[2].src = './nav/projects.png';
+
+    blocksImg[3] = new Image();
+    blocksImg[3].src = './nav/contact.png';
+
+    blocksImg[4] = new Image();
+    blocksImg[4].src = './nav/blog.png';
+
     function Block (xVal, t) {
         this.xMult = xVal;
         this.x = background.x + background.size.x * xVal - cubeWidth/2;
@@ -87,9 +131,6 @@ let nav = (function() {
         },
         setVelocity: function()
         {
-            // if(player.jumping == false)
-            // {
-                console.log(1);
                 player.xv = 0;
                 xvel = false
                 if (keys.l){player.xv -= 1; xvel = true;}
@@ -194,10 +235,10 @@ let nav = (function() {
     player.curImg = player.img;
     player.xv = 0
     blocks.push(new Block(0.5, "About"));
-    blocks.push(new Block(0.35, "Projects"));
-    blocks.push(new Block(0.65, "Experience"));
-    blocks.push(new Block(0.2, "Skills"));
-    blocks.push(new Block(0.8, "Contact"));
+    blocks.push(new Block(0.35, "Skills"));
+    blocks.push(new Block(0.65, "Projects"));
+    blocks.push(new Block(0.2, "Contact"));
+    blocks.push(new Block(0.8, "Blog"));
     background.img.src = 'nav/background.jpg';
     background.img.onload = function() {
             resizeCanvas()
@@ -213,7 +254,37 @@ let nav = (function() {
                     x : e.pageX - offsetX,
                     y : e.pageY - offsetY
                 };
-                checkForBlockClick(mouse)
+                checkForBlockClick(mouse);
+            };
+            document.onmouseup = function(e){
+                var canvasOffset=$("#mfnav").offset();
+                var offsetX=canvasOffset.left;
+                var offsetY=canvasOffset.top;
+                let mouse = {
+                    x : e.pageX - offsetX,
+                    y : e.pageY - offsetY
+                };
+                mouseStopMoving(mouse);
+            };
+            document.ontouchstart = function(e){
+                var canvasOffset=$("#mfnav").offset();
+                var offsetX=canvasOffset.left;
+                var offsetY=canvasOffset.top; // relationship bitmap vs. element for Y
+                let mouse = {
+                    x : e.pageX - offsetX,
+                    y : e.pageY - offsetY
+                };
+                checkForBlockClick(mouse);
+            };
+            document.ontouchend = function(e){
+                var canvasOffset=$("#mfnav").offset();
+                var offsetX=canvasOffset.left;
+                var offsetY=canvasOffset.top;
+                let mouse = {
+                    x : e.pageX - offsetX,
+                    y : e.pageY - offsetY
+                };
+                mouseStopMoving(mouse);
             };
             window.addEventListener("keydown", function(e) {
                 if (started == true)
@@ -233,6 +304,7 @@ let nav = (function() {
             y : 0
         },
         setUp: false,
+        pic : new Image(),
         growing : true,
         jumping : false,
         playerHeightMod: 1,
@@ -242,6 +314,7 @@ let nav = (function() {
         entering: false,
         risingMult: 0
     };
+    warpPipe.pic.src = 'nav/warppipe.png';
     function checkForBlockClick(m)
     {
         for(var i = 0; i < blocks.length; i++)
@@ -253,6 +326,29 @@ let nav = (function() {
                 warpPipe.readyToWarp = true;
             }
         }
+        if (started == true && warpPipe.readyToWarp == false
+        && m.y < background.y + background.size.y && m.y > background.y
+        && m.x < background.x + background.size.x * 0.99 && m.x > background.x + background.size.x * 0.01 ){
+            if (m.x < player.x)
+            {
+                keys.l = true;
+                keys.r = false;
+            }
+            else if (m.x > player.size.x + player.x)
+            {
+                keys.r = true;
+                keys.l = false;
+            }
+            if (m.y < player.y) {
+                keys.u = true;
+            }
+        }
+    }
+    function mouseStopMoving(m)
+    {
+        keys.r = false;
+        keys.l = false;
+        keys.u = false;
     }
     function blockJump ()
     {
@@ -282,9 +378,18 @@ let nav = (function() {
         // let width = window.innerWidth
         //     || document.documentElement.clientWidth
         //     || document.body.clientWidth;
-        let width = $("#nav_canvas").width();
+        width = $("#nav_canvas").width();
         canvNav.width = width;
         canvNav.height = width * 0.20;
+        if (width < 600) {
+             canvNav.height = width * 0.4;
+        }
+        if (width < 500) {
+             canvNav.height = width * 0.5;
+        }
+        if (width < 400) {
+             canvNav.height = width * 0.6;
+        }
         background.x = 0;
         background.y = 0;
         let oldBGsize = {
@@ -314,7 +419,7 @@ let nav = (function() {
         }
         player.size.x = cubeWidth
         player.size.y = cubeWidth * 2
-        let f = cubeWidth/4;
+        let f = cubeWidth/3;
         navCtx.font = f + "px Comic Sans MS";
         for (var i = 0; i < blocks.length; i++)
         {
@@ -324,23 +429,39 @@ let nav = (function() {
         }
         player.blockY = background.y + background.size.y * 0.8 - background.size.y * 0.255 - cubeWidth*1.75;
         //navCtx.drawImage(background.img, 0, 0, background.img.width, background.img.height,
-        //    background.x, background.y, background.size.x, background.size.y);
-        navCtx.fillStyle="#42c5f4";
-        navCtx.fillRect(background.x, background.y, background.size.x, background.size.y);
-        navCtx.fillStyle="#f4a941";
-        navCtx.fillRect(background.x, background.y+background.size.y*0.8, background.size.x, background.size.y*0.25);
-        drawBlocks()
+        //    background.x, background.y, background.size.x, background.size.y)
+        drawBackground();
         navCtx.drawImage(player.curImg, player.curImgPosition.x, player.curImgPosition.y, player.img.width, player.img.height,
             player.x, player.y, player.size.x, player.size.y);
+        navCtx.textAlign = "left";
+        navCtx.fillStyle="#ffffff";
+        drawTutorial()
+    }
+    function drawTutorial() {
+        navCtx.fillStyle="#ffffff";
+        navCtx.textAlign = "left";
+        if (isMobile.any())
+        {
+            navCtx.fillText("Hit a block to go to that section!", background.x + background.size.x * 0.05, background.x + background.size.y * 0.5);
+            navCtx.fillText("Touch the screen to move around and jump", background.x + background.size.x * 0.05, background.x + background.size.y * 0.575);
+            navCtx.fillText("or just tap on a block!", background.x + background.size.x * 0.05, background.x + background.size.y * 0.65);
+
+        }
+        else {
+            navCtx.fillText("Hit a block to go to that section!", background.x + background.size.x * 0.05, background.x + background.size.y * 0.5);
+            navCtx.fillText("Use the arrow keys to move", background.x + background.size.x * 0.05, background.x + background.size.y * 0.575);
+            navCtx.fillText("and the space bar to jump", background.x + background.size.x * 0.05, background.x + background.size.y * 0.65);
+            navCtx.fillText("or just click a block with the mouse!", background.x + background.size.x * 0.05, background.x + background.size.y * 0.725);
+        }
     }
     function run()
     {
         if ($(document).scrollTop()<background.y+background.size.y)
         {
-            navCtx.fillStyle="#42c5f4";
-            navCtx.fillRect(background.x, background.y, background.size.x, background.size.y);
-            navCtx.fillStyle="#f4a941";
-            navCtx.fillRect(background.x, background.y+background.size.y*0.8, background.size.x, background.size.y*0.2);
+            drawBackground();
+            drawTutorial();
+            // navCtx.fillStyle="#f4a941";
+            // navCtx.fillRect(background.x, background.y+background.size.y*0.8, background.size.x, background.size.y*0.2);
             blockJump()
             drawBlocks()
             if (warpPipe.warping == false)
@@ -356,6 +477,27 @@ let nav = (function() {
             moveWarpPipe();
         }
     }
+
+    function drawBackground()
+    {
+        let skyMult = (width * 0.2) / background.size.y;
+        if (skyMult < 0.95) {
+            navCtx.fillStyle="#42b3f4";
+            navCtx.fillRect(background.x, background.y, background.size.x, background.size.y*0.15);
+            navCtx.fillStyle="#1f96db";
+            navCtx.fillRect(background.x, background.y + background.size.y*0.15, background.size.x, background.size.y*0.65);
+            navCtx.drawImage(skyImg, 0, 0, skyImg.width, skyImg.height,
+            background.x, background.y + background.size.y * 0.1, background.size.x, background.size.y*0.8 * skyMult);
+
+        }
+        else {
+            navCtx.drawImage(skyImg, 0, 0, skyImg.width, skyImg.height,
+            background.x, background.y, background.size.x, background.size.y*0.8);
+        }
+        navCtx.drawImage(floorImg, 0, 0, floorImg.width, floorImg.height,
+        background.x, background.y+background.size.y*0.8, background.size.x, background.size.y*0.2);
+
+    }
     function drawBlocks()
     {
         navCtx.textAlign = "center";
@@ -363,7 +505,9 @@ let nav = (function() {
         {
             let b = blocks[i];
             navCtx.fillStyle="#f4a941";
-            navCtx.fillRect(b.x,b.y,b.size,b.size);
+            navCtx.drawImage(blocksImg[i], 0, 0, blocksImg[i].width, blocksImg[i].height,
+                b.x,b.y,b.size,b.size);
+            //navCtx.fillRect(b.x,b.y,b.size,b.size);
             navCtx.fillStyle = "white";
             navCtx.fillText(b.type, b.x+b.size/2, player.blockY + b.size * 0.4)
 
@@ -522,8 +666,8 @@ let nav = (function() {
                $container.offset().top + $container.scrollTop(), scrollLeft: 0},700);
             //window.addEventListener('resize', resizeCanvas, false);
         }
-        navCtx.fillStyle="#333333";
-        navCtx.fillRect(warpPipe.x, warpPipe.y, warpPipe.size.x, warpPipe.size.y);
+        navCtx.drawImage(warpPipe.pic, 0, 0, warpPipe.pic.width, warpPipe.pic.height * warpPipe.risingMult,
+            warpPipe.x, warpPipe.y, warpPipe.size.x, warpPipe.size.y);
         if (warpPipe.playerHeightMod != 1)
         {
             navCtx.drawImage(player.img, 0, 0, player.img.width, player.img.height * warpPipe.playerHeightMod,
@@ -531,7 +675,7 @@ let nav = (function() {
         }
         else
         {
-            console.log(player.curImgPosition.x + " " + player.curImgPosition.y)
+            // console.log(player.curImgPosition.x + " " + player.curImgPosition.y)
             navCtx.drawImage(player.curImg, player.curImgPosition.x, player.curImgPosition.y, player.img.width, player.img.height,
                 player.x, player.y, player.size.x, player.size.y);
         }

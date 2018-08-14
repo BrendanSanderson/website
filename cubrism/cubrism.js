@@ -3,6 +3,9 @@ let cubrism = (function() {
     var background_inner
     var started = false;
     var gameInterval;
+    var first = true;
+    let pauseImg = new Image();
+    pauseImg.src = "cubrism/pause.png"
     var enemy = {
         enemies: [],
         act: function ()
@@ -169,7 +172,6 @@ let cubrism = (function() {
         let oldRoomSizeY = room.size.y;
         canv.width = width;
         canv.height = width * 9/16;
-        //background.x = window.innerWidth*0.1;
         background.x = width * 0.05;
         background.y = 0;
         background.size.x = width * 0.9;
@@ -189,11 +191,46 @@ let cubrism = (function() {
         }
         ctx.drawImage(background.img, 0, 0, background.img.width, background.img.height,
             background.x, background.y, background.size.x, background.size.y);
-        ctx.drawImage(room.img, 0, 0, room.img.width, room.img.height,
-            room.x, room.y, room.size.x, room.size.y);
-        ctx.drawImage(player.img, 0, 0, player.img.width, player.img.height,
-            player.x, player.y, player.size, player.size);
-        player.placeCannon();
+        if (started == true)
+        {
+            ctx.drawImage(room.img, 0, 0, room.img.width, room.img.height,
+                room.x, room.y, room.size.x, room.size.y);
+            ctx.drawImage(player.img, 0, 0, player.img.width, player.img.height,
+                player.x, player.y, player.size, player.size);
+                player.placeCannon();
+        }
+        if (first == true) {
+            // ctx.drawImage(pauseImg, 0,0,pauseImg.width,pauseImg.height,
+            //     background.x+background.size.x*0.25, background.y + background.size.y *0.25,
+            //     background.size.x * 0.5, background.size.y * 0.5);
+            ctx.textAlign = "center";
+            var f = background.size.x/20;
+            ctx.font = f + "px Comic Sans MS";
+            ctx.fillStyle = "white";
+            ctx.fillText("Welcome to the Cubrism demo!", background.x + background.size.x * 0.5, background.y+background.size.y * 0.35);
+            f = background.size.x/50;
+            ctx.font = f + "px Comic Sans MS";
+            ctx.fillText("Use the arrow keys", background.x + background.size.x * 0.3, background.y+background.size.y * 0.475);
+            ctx.fillText("or WSAD to shoot", background.x + background.size.x * 0.3, background.y+background.size.y * 0.525);
+            ctx.fillText("Use the mouse to", background.x + background.size.x * 0.7, background.y+background.size.y * 0.475);
+            ctx.fillText("aim and shoot!", background.x + background.size.x * 0.7, background.y+background.size.y * 0.525);
+            ctx.fillText("Press the spacebar to begin!", background.x + background.size.x * 0.5, background.y+background.size.y * 0.65);
+        }
+        else if (started == false)
+        {
+            // ctx.drawImage(pauseImg, 0,0,pauseImg.width,pauseImg.height,
+            //     background.x+background.size.x*0.25, background.y + background.size.y *0.25,
+            //     background.size.x * 0.5, background.size.y * 0.5);
+            ctx.textAlign = "center";
+            var f = background.size.x/20;
+            ctx.font = f + "px Comic Sans MS";
+            ctx.fillStyle = "white";
+            ctx.fillText("You Died!", background.x + background.size.x * 0.5, background.y+background.size.y * 0.35);
+            f = background.size.x/40;
+            ctx.font = f + "px Comic Sans MS";
+            ctx.fillText("Your score: " + score, background.x + background.size.x * 0.5, background.y+background.size.y * 0.5);
+            ctx.fillText("Press the spacebar to try again!", background.x + background.size.x * 0.5, background.y+background.size.y * 0.65);
+        }
 
     }
     function game ()
@@ -559,6 +596,7 @@ let cubrism = (function() {
     }
     function startGame() {
         started = true;
+        first = false;
         document.addEventListener("keyup",keyUp);
         window.addEventListener("keydown", function(e) {
             if (started == true)
@@ -589,8 +627,7 @@ let cubrism = (function() {
         player.shield = 100;
         enemy.enemies.length = 0;
         clearInterval(gameInterval);
-        ctx.drawImage(background.img, 0, 0, background.img.width, background.img.height,
-            background.x, background.y, background.size.x, background.size.y);
+        resizeCanvas()
 
     }
     function keyPush(evt) {
@@ -628,8 +665,6 @@ let cubrism = (function() {
         else {
             if (evt.keyCode == 32)
             {
-                //console.log ($(document).scrollTop() + " " + ($("#mf").offset().top + background.size.y));
-                //console.log ($(document).scrollBottom() + " " + $("#mf").offset().top+ background.size.y);
                 if ($(document).scrollTop() < $("#mf").offset().top +background.size.y &&
                     $(document).scrollTop()+ $(window).height() > $("#mf").offset().top)
                 {

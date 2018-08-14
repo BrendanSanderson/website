@@ -9,7 +9,8 @@ html, body
 #nav_canvas {
   margin-bottom:0px;
   padding-bottom: 0px;
-  background-color: #f4a941;
+
+  background-color: #b5780c;
 }
 #about {
   background-color: #42b3f4;
@@ -22,6 +23,10 @@ html, body
   text-align: center;
 }
 
+@font-face {
+    font-family: 'Comfortaa-Regular';
+    src: url('../cubrism/Comfortaa-Regular.ttf');
+}
 #about img {
   height: 50%;
     width: 50%;
@@ -63,8 +68,15 @@ html, body
   text-align: center;
   margin:0px;
 }
-#skills h1 {
-  font-size: 5em;
+.contact-title {
+  padding-bottom: 50px;
+}
+#contact {
+  padding-top: 100px;
+  padding-right: 15%;
+  padding-left: 15%;
+  padding-bottom: 100px;
+  text-align: center;
 }
 #skills li {
   /*list-style-position: inside;*/
@@ -72,6 +84,15 @@ html, body
   padding-right: 10%;
   padding-top: 5%;
   padding-bottom: 5%;
+}
+.section-title {
+  padding-right: 0px;
+  padding-left: 0px;
+  padding-bottom: 50px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin: 0 auto;
+  font-size: 5em;
 }
 .skills-title {
   padding-right: 0px;
@@ -81,6 +102,11 @@ html, body
   margin-right: 0px;
   margin: 0 auto;
   clear:right;
+}
+.about-title {
+  padding-right: 0px;
+  padding-left: 0px;
+  padding-bottom: 50px;
 }
 h1 {
   text-align: center;
@@ -115,6 +141,7 @@ h3 {
 .proj-section {
   padding-left: 15%;
   padding-right: 15%;
+  padding-bottom: 20px;
 }
 .link {
   padding-left: 50px;
@@ -146,7 +173,7 @@ h3 {
   font-size: 5em;
   background-color: #f4c242;
 }
-.proj-title{
+.subsection-title{
   padding-bottom: 0px;
   padding-top: 20px;
   margin-top: 0;
@@ -176,13 +203,26 @@ h3 {
   margin: 0;
 }
 .proj-body-pic {
-  width: 50%;
+  width: 75%;
   margin: auto;
   text-align: center;
   display: block;
 }
+#experience {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background-color: green;
+}
+#blog {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background-color: green;
+}
 #cubrism {
   color: white;
+}
+.itunes-link {
+  text-align: center;
 }
 .cubrism-background-img {
   width:100%;
@@ -228,25 +268,6 @@ h3 {
   padding-top: 5px;
   padding-bottom: 5px;
 }
-/*.skills-circle {
-      text-align: center;
-      width: 50%;
-      padding-top:50%;
-      -webkit-border-radius: 50%;
-      -moz-border-radius: 50%;
-      border-radius: 50%;
-      background: red;
-      margin: 15%;
-    }*/
-/*.test1 {
-  background-color: blue;
+.media-img {
+  width: 75%;
 }
-.test2 {
-  background-color: red;
-}
-.test3 {
-  background-color: green;
-}
-.test4 {
-  background-color: yellow;
-}*/
